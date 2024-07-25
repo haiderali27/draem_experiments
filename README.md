@@ -1,2 +1,2 @@
 # draem_experiments
-Experimental modification are added to Vitjanz DRAEM. 
+Experimental modifications are added to Vitjanz DRAEM (https://github.com/VitjanZ/DRAEM).
