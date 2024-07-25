@@ -1,0 +1,10 @@
+Pillow
+numpy
+scikit-image
+matplotlib
+torchvision
+pytorch
+lightning
+pytorch-lightning-bolts
+lightning-bolts
+imgaug
