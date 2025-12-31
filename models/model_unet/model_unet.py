@@ -20,7 +20,7 @@ class SelfAttention(nn.Module):
 
         out = torch.bmm(proj_value, attention.permute(0, 2, 1))
         out = out.view(m_batchsize, C, width, height)
-        
+
         out = self.gamma * out + x
         return out
 
@@ -34,32 +34,11 @@ def get_activation(name):
 class ReconstructiveSubNetworkVAEAttention(nn.Module):
     def __init__(self, in_channels=3, out_channels=3, base_width=128, postAttention=False):
         super(ReconstructiveSubNetworkVAEAttention, self).__init__()
-        
+
         self.encoder = EncoderReconstructive(in_channels, base_width)
         self.attention = SelfAttention(base_width=base_width)
         self.decoder = DecoderReconstructive(base_width, out_channels=out_channels)
         self.postAttention = postAttention
-        #height=256, width=256
-        #self.encoder.block5.register_forward_hook(get_activation('b5'))
-        #x = torch.randn(1, 1024, 16, 16)
-        #x = torch.randn(1, in_channels, height, width)
-        #self.en_output = self.encoder(x)
-        #self.en_output_shape = self.en_output.detach().shape
-        #print('Attention Input:',self.en_output_shape[1])
-
-        #print(self.en_output.detach().shape)
-        #self.attention = SelfAttention(base_width=base_width)
-        
-        #flatten_len = len(self.en_output.flatten())
-        #self.fc_mu = nn.Linear(flatten_len, latent_dim)
-        #self.fc_var = nn.Linear(flatten_len, latent_dim)
-        
-        #self.decoder = DecoderReconstructive(base_width, out_channels=out_channels)
-        #self.decoder.fin_out.register_forward_hook(get_activation('out'))
-        #x = torch.randn(1, 1024, 16, 16)
-        #output = self.decoder(self.en_output)
-        #print(output.shape)
-
 
     def forward(self, x):
         if self.postAttention:
@@ -70,8 +49,8 @@ class ReconstructiveSubNetworkVAEAttention(nn.Module):
             z = attention + eps*std
             output = self.decoder(z)
             return output
-        else: 
-            b5 = self.encoder(x)       
+        else:
+            b5 = self.encoder(x)
             std = torch.exp(0.5*b5)
             eps = torch.randn_like(std)
             z = b5 + eps*std
@@ -84,11 +63,11 @@ class ReconstructiveSubNetworkVAEAttention(nn.Module):
 class ReconstructiveSubNetworkAttention(nn.Module):
     def __init__(self, in_channels=3, out_channels=3, base_width=128):
         super(ReconstructiveSubNetworkAttention, self).__init__()
-        
+
         self.encoder = EncoderReconstructive(in_channels, base_width)
         self.attention = SelfAttention(base_width=base_width)
         self.decoder = DecoderReconstructive(base_width, out_channels=out_channels)
-        
+
 
     def forward(self, x):
         b5 = self.encoder(x)
@@ -100,7 +79,7 @@ class ReconstructiveSubNetworkAttention(nn.Module):
 class ReconstructiveSubNetworkVAE(nn.Module):
     def __init__(self, in_channels=3, out_channels=3, base_width=128):
         super(ReconstructiveSubNetworkVAE, self).__init__()
-        
+
         self.encoder = EncoderReconstructive(in_channels, base_width)
         self.decoder = DecoderReconstructive(base_width, out_channels=out_channels)
 
@@ -113,7 +92,7 @@ class ReconstructiveSubNetworkVAE(nn.Module):
         z = b5 + eps*std
         output = self.decoder(z)
         return output
- 
+
 
 class ReconstructiveSubNetwork(nn.Module):
     def __init__(self,in_channels=3, out_channels=3, base_width=128):
@@ -307,8 +286,6 @@ class DecoderDiscriminative(nn.Module):
         out = self.fin_out(db4)
         return out
 
-
-
 class EncoderReconstructive(nn.Module):
     def __init__(self, in_channels, base_width):
         super(EncoderReconstructive, self).__init__()
@@ -364,7 +341,6 @@ class EncoderReconstructive(nn.Module):
         mp4 = self.mp4(b4)
         b5 = self.block5(mp4)
         return b5
-
 
 class DecoderReconstructive(nn.Module):
     def __init__(self, base_width, out_channels=1):

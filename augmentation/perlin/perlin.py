@@ -16,7 +16,6 @@ def generate_fractal_noise_2d(shape, res, octaves=1, persistence=0.5):
         amplitude *= persistence
     return noise
 
-
 def generate_perlin_noise_2d(shape, res):
     def f(t):
         return 6 * t ** 5 - 15 * t ** 4 + 10 * t ** 3
@@ -42,7 +41,6 @@ def generate_perlin_noise_2d(shape, res):
     n1 = n01 * (1 - t[:, :, 0]) + t[:, :, 0] * n11
     return np.sqrt(2) * ((1 - t[:, :, 1]) * n0 + t[:, :, 1] * n1)
 
-
 def rand_perlin_2d_np(shape, res, fade=lambda t: 6 * t ** 5 - 15 * t ** 4 + 10 * t ** 3):
     delta = (res[0] / shape[0], res[1] / shape[1])
     d = (shape[0] // res[0], shape[1] // res[1])
@@ -63,7 +61,6 @@ def rand_perlin_2d_np(shape, res, fade=lambda t: 6 * t ** 5 - 15 * t ** 4 + 10 *
     n11 = dot(tile_grads([1, None], [1, None]), [-1, -1])
     t = fade(grid[:shape[0], :shape[1]])
     return math.sqrt(2) * lerp_np(lerp_np(n00, n10, t[..., 0]), lerp_np(n01, n11, t[..., 0]), t[..., 1])
-
 
 def rand_perlin_2d(shape, res, fade=lambda t: 6 * t ** 5 - 15 * t ** 4 + 10 * t ** 3):
     delta = (res[0] / shape[0], res[1] / shape[1])
@@ -87,7 +84,6 @@ def rand_perlin_2d(shape, res, fade=lambda t: 6 * t ** 5 - 15 * t ** 4 + 10 * t 
     n11 = dot(tile_grads([1, None], [1, None]), [-1, -1])
     t = fade(grid[:shape[0], :shape[1]])
     return math.sqrt(2) * torch.lerp(torch.lerp(n00, n10, t[..., 0]), torch.lerp(n01, n11, t[..., 0]), t[..., 1])
-
 
 def rand_perlin_2d_octaves(shape, res, octaves=1, persistence=0.5):
     noise = torch.zeros(shape)

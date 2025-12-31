@@ -148,9 +148,8 @@ def ssim(img1, img2, window_size=11, window=None, size_average=True, full=False,
         return ret, cs
     return ret, ssim_map
 
-
 class SSIM(torch.nn.Module):
-    def __init__(self, window_size=11, size_average=True, val_range=None):
+    def __init__(self, window_size=11, size_average=True, val_range=None, device='cuda'):
         super(SSIM, self).__init__()
         self.window_size = window_size
         self.size_average = size_average
@@ -158,7 +157,7 @@ class SSIM(torch.nn.Module):
 
         # Assume 1 channel for SSIM
         self.channel = 1
-        self.window = create_window(window_size).cuda()
+        self.window = create_window(window_size).to(device=device)
 
     def forward(self, img1, img2):
         (_, channel, _, _) = img1.size()
@@ -171,55 +170,41 @@ class SSIM(torch.nn.Module):
             self.channel = channel
 
         s_score, ssim_map = ssim(img1, img2, window=window, window_size=self.window_size, size_average=self.size_average)
-        #print('########',s_score.shape, s_score)
         return 1.0 - s_score
 
-
-
 class LpipsLoss(torch.nn.Module):
-    def __init__(self, net='squeeze'):
+    def __init__(self, net='squeeze', device='cuda'):
         super(LpipsLoss, self).__init__()
         self.net = net
+        self.device = device
 
     def forward(self, img1, img2):
-        #img1 = img1.float()  # Convert to float32 if needed
-        #img1 = (img1 - img1.min()) / (img1.max() - img1.min())  # Normalize to [0, 1]
-        #img2 = img2.float()  # Convert to float32 if needed
-        #img2 = (img2 - img2.min()) / (img2.max() - img2.min())  # Normalize to [0, 1]
-        img1 = img1 / 255.0 
-        img2 = img2 / 255.0 
-        lpips = LearnedPerceptualImagePatchSimilarity(net_type=self.net, normalize=False).to('cuda')
+        img1 = img1 / 255.0
+        img2 = img2 / 255.0
+        lpips = LearnedPerceptualImagePatchSimilarity(net_type=self.net, normalize=False).to(self.device)
         lpips_score = lpips(img1, img2)
         return 1.0 - lpips_score
-    
 
 class LpipsLoss_(torch.nn.Module):
-    def __init__(self, net='alex'):
+    def __init__(self, net='alex', device='cuda'):
         super(LpipsLoss_, self).__init__()
         self.net = net
+        self.device = device
 
     def forward(self, img1, img2):
-        #img1 = torch.tensor(img1).permute(2,0,1).unsqueeze(0)
-        #img2 = torch.tensor(img2).permute(2,0,1).unsqueeze(0)
-        loss_fn = lpips.LPIPS(net=self.net).to('cuda')
+        loss_fn = lpips.LPIPS(net=self.net).to(self.device)
         lpips_score = loss_fn(img1, img2)
         lpips_score = lpips_score.squeeze().mean()
-        #print('########',lpips_score.shape, lpips_score)
-        
         return 1.0 - lpips_score
 
-
 class MSSIM(torch.nn.Module):
-    def __init__(self, k_size=11, gaussian_kernel=True):
+    def __init__(self, k_size=11, gaussian_kernel=True, device='cuda'):
         super(MSSIM, self).__init__()
         self.kernel_size = k_size
         self.gaussian_kernel = gaussian_kernel
-
+        self.device = device
 
     def forward(self, img1, img2):
-        #img1 = torch.tensor(img1).permute(2,0,1).unsqueeze(0)
-        #img2 = torch.tensor(img2).permute(2,0,1).unsqueeze(0)
-        ms_ssim = MultiScaleStructuralSimilarityIndexMeasure(data_range=1.0).to('cuda')
-        score = ms_ssim(img1, img2)#, gaussian_kernel=self.gaussian_kernel, data_range = 1.0)
-        #print('#################', score)
+        ms_ssim = MultiScaleStructuralSimilarityIndexMeasure(data_range=1.0).to(self.device)
+        score = ms_ssim(img1, img2)
         return 1.0 - score

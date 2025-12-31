@@ -2,9 +2,13 @@ Pillow
 numpy
 scikit-image
 matplotlib
+torch
 torchvision
-pytorch
 lightning
 pytorch-lightning-bolts
+tensorboard
 lightning-bolts
 imgaug
+lpips
+scikit-learn
+ipykernel

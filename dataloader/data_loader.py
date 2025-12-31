@@ -5,7 +5,7 @@ import torch
 import cv2
 import glob
 import imgaug.augmenters as iaa
-from perlin import rand_perlin_2d_np
+from augmentation.perlin.perlin import rand_perlin_2d_np
 import random
 
 class MVTecDRAEMTestDataset(Dataset):
@@ -121,27 +121,27 @@ class MVTecDRAEMTrainDataset(Dataset):
             if self.bias_perlin:
                 if self.low_to_high:
                     bias_val = random.randint(1, 3)
-                    
+
                     if bias_val == 3:
                         if self.bias_perlin_max<6:
                             self.bias_perlin_max=6
                         perlin_scale = self.bias_perlin_max
                         min_perlin_scale=0
-                    elif bias_val == 2: 
+                    elif bias_val == 2:
                         perlin_scale = 4
                         min_perlin_scale=0
-                    else: 
+                    else:
                         perlin_scale = 2
                         min_perlin_scale=0
-                else: 
+                else:
                     bias_val = random.randint(1, 3)
                     if bias_val == 3:
                         perlin_scale = 4
                         min_perlin_scale=0
-                    elif bias_val == 2: 
+                    elif bias_val == 2:
                         perlin_scale = 9
                         min_perlin_scale=5
-                    else: 
+                    else:
                         perlin_scale = 9
                         min_perlin_scale=7
 
@@ -162,9 +162,9 @@ class MVTecDRAEMTrainDataset(Dataset):
                             a=8
                         else:
                             b=b+1
-                    perlin_scale = b 
+                    perlin_scale = b
                     min_perlin_scale = a
-                    
+
 
 
 
@@ -185,10 +185,10 @@ class MVTecDRAEMTrainDataset(Dataset):
 
         img_thr = anomaly_img_augmented.astype(np.float32) * perlin_thr / 255.0
 
-        
+
 
         beta = torch.rand(1).numpy()[0] * 0.8
-        if self.ignore_black_region: 
+        if self.ignore_black_region:
             # Create a mask for regions where the original image has a totally black region
             black_mask = np.all(image == 0, axis=-1, keepdims=True)
 
@@ -197,10 +197,10 @@ class MVTecDRAEMTrainDataset(Dataset):
 
         augmented_image = image * (1 - perlin_thr) + (1 - beta) * img_thr + beta * image * (
             perlin_thr)
-        
 
-   
-   
+
+
+
         no_anomaly = torch.rand(1).numpy()[0]
         if self.train_with_no_aug:
             no_anomaly=1.0
