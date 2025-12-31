@@ -38,7 +38,7 @@ There should be only two weights files in the path and the files should come fro
 
 ## Modifications
 
-The modification diagrams can be seen in section 3.4.
+The modification diagrams can be seen in section 3.4 of thesis.
 
 ### Augmentation
 
@@ -76,4 +76,4 @@ In this example VAE-Attention-Encoder reconstruction network is used with LPIPS 
 
 ## Results
 
-Results can be seen in section 4.5.
+Results can be seen in section 4.5 of thesis.
