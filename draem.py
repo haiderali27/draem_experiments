@@ -79,6 +79,7 @@ def test(args: SimpleNamespace):
 def add_subparsers(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers()
     train_parser = subparsers.add_parser('train')
+    train_parser.set_defaults(ignore_black_region=True)
     train_parser.add_argument('--object-name', '-o',
         type=str,
         default='cars',
@@ -117,8 +118,8 @@ def add_subparsers(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
         type=str,
         default=f'{os.getcwd()}',
         help='path of images that are used for creating augmented anomalies')
-    train_parser.add_argument('--ignore-black-region',
-        type=bool,
+    train_parser.add_argument('--augment-black-region',
+        dest='ignore_black_region',
         default=True,
         help='ignores augmentation on pixels with the value of 0')
     train_parser.add_argument('--checkpoint-path', '-c',
@@ -132,6 +133,8 @@ def add_subparsers(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     train_parser.set_defaults(func=train)
 
     test_parser = subparsers.add_parser('test')
+    test_parser.set_defaults(ignore_black_region=True)
+    test_parser.set_defaults(load_checkpoints=False)
     test_parser.add_argument('--object-name', '-o',
         type=str,
         default='cars',
@@ -170,8 +173,8 @@ def add_subparsers(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
         type=str,
         default=f'{os.getcwd()}',
         help='path of images that are used for creating augmented anomalies')
-    test_parser.add_argument('--ignore-black-region',
-        type=bool,
+    test_parser.add_argument('--augment-black-region',
+        dest='ignore_black_region',
         default=True,
         help='ignores augmentation on pixels with the value of 0')
     test_parser.add_argument('--checkpoint-path', '-c',
@@ -183,8 +186,7 @@ def add_subparsers(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
         default=f'{os.getcwd()}/logs',
         help='path of logs')
     test_parser.add_argument('--load-checkpoints',
-        type=bool,
-        default=False,
+        dest='load_checkpoints',
         help='use pre-defined weights from checkpoints')
     test_parser.set_defaults(func=test)
 
